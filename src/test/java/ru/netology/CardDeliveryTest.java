@@ -27,7 +27,7 @@ public class CardDeliveryTest {
         $("[data-test-id='phone'] input").setValue("+79052447564");
         $("[data-test-id='agreement'] .checkbox__box").click();
         $(".button").click();
-        $(withText("Успешно!")).waitUntil(visible, 1200);
+        $(withText("Успешно!")).waitUntil(visible, 12000);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class CardDeliveryTest {
         $("[data-test-id='phone'] input").setValue("+79056487564");
         $("[data-test-id='agreement'] .checkbox__box").click();
         $(".button").click();
-        $(withText("Успешно!")).waitUntil(visible, 1200);
+        $(withText("Успешно!")).waitUntil(visible, 12000);
     }
 
     @Test

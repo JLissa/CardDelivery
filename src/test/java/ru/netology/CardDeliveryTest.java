@@ -1,8 +1,10 @@
 package ru.netology;
 
+import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -16,18 +18,41 @@ public class CardDeliveryTest {
     LocalDate bookingDate = date.plusDays(3 + random_num);
     private DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
+    public String generateDate(int days) {
+        return LocalDate.now().plusDays(days).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+    }
+
     @Test
     void shouldMakeBookingAndReturnSuccessMessage(){
         open("http://localhost:9999");
         $("[data-test-id='city'] input").setValue("Москва");
         //*span
-        $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $("[data-test-id='date'] input").sendKeys(formatDate.format(bookingDate));
         $("[data-test-id='name'] input").setValue("Федор Достоевкий");
         $("[data-test-id='phone'] input").setValue("+79052447564");
         $("[data-test-id='agreement'] .checkbox__box").click();
         $(".button").click();
-        $(withText("Успешно!")).waitUntil(visible, 12000);
+        $(".notification__content")
+                .shouldHave(Condition.text("Встреча успешно забронирована на " + formatDate.format(bookingDate)), Duration.ofSeconds(20))
+                .shouldBe(Condition.visible);
+
+    }
+
+    @Test
+    void shouldSendFormWithValidData() {
+        open("http://localhost:9999");
+        String planningDate = generateDate(5);
+        $("[data-test-id=city] input").setValue("Москва");
+        $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").setValue(planningDate);
+        $("[data-test-id=name] input").setValue("Иванов Иван");
+        $("[data-test-id=phone] input").setValue("+79999999999");
+        $("[data-test-id=agreement]").click();
+        $(".button").click();
+        $(".notification__content")
+                .shouldHave(Condition.text("Встреча успешно забронирована на " + planningDate), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible);
     }
 
     @Test
@@ -96,7 +121,9 @@ public class CardDeliveryTest {
         $("[data-test-id='phone'] input").setValue("+79056487564");
         $("[data-test-id='agreement'] .checkbox__box").click();
         $(".button").click();
-        $(withText("Успешно!")).waitUntil(visible, 12000);
+        $(".notification__content")
+                .shouldHave(Condition.text("Встреча успешно забронирована на " + formatDate.format(bookingDate)), Duration.ofSeconds(20))
+                .shouldBe(Condition.visible);
     }
 
     @Test
